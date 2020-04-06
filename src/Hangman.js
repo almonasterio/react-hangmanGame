@@ -18,7 +18,7 @@ class Hangman extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { nWrong: 0, guessed: new Set(), answer: randomWord() };
+    this.state = { nWrong: 0, nRight:0, guessed: new Set(), answer: randomWord() };
     this.handleGuess = this.handleGuess.bind(this);
     this.handleRestart = this.handleRestart.bind(this);
   }
@@ -38,10 +38,14 @@ class Hangman extends Component {
   */
   handleGuess(evt) {
     let ltr = evt.target.value;
+
     this.setState(st => ({
       guessed: st.guessed.add(ltr),
-      nWrong: st.nWrong + (st.answer.includes(ltr) ? 0 : 1)
+      nWrong: st.nWrong + (st.answer.includes(ltr) ? 0 : 1),
+      nRight: st.nRight + (st.answer.includes(ltr) ? 1 : 0)
     }));
+    
+
   }
 
   /** generateButtons: return array of letter buttons to render */
@@ -61,6 +65,7 @@ class Hangman extends Component {
   handleRestart(e) {
     this.setState(st => ({ 
   nWrong: 0,
+  nRight: 0,
   guessed: new Set(),
   answer: randomWord()
     }))
@@ -71,13 +76,15 @@ class Hangman extends Component {
 
   /** render: render game */
   render() {
+      console.log(this.state.answer)
+      console.log(this.state.nRight)
     return (
       <div className='Hangman'>
         <h1>Hangman</h1>
         <img src={this.props.images[this.state.nWrong]} alt={`${this.state.nWrong} wrong guesses out of your ${this.props.maxWrong} guesses allowed`}/>
         <p>Number wrong: {this.state.nWrong}</p>
         <p className='Hangman-word'>{this.guessedWord()}</p>
-        {this.state.nWrong===this.props.maxWrong? <div className="lose-message"><h1 >YOU LOSE!</h1><button className="restart-btn" onClick={this.handleRestart}>RESTART</button></div> : <p className='Hangman-btns'>{this.generateButtons()}</p>}
+         {this.state.nRight===this.state.answer.length? <div className="win-message"><h1 >YOU WIN!</h1><button className="restart-btn" onClick={this.handleRestart}>RESTART</button></div> : this.state.nWrong===this.props.maxWrong? <div className="lose-message"><h1 >YOU LOSE!</h1><button className="restart-btn" onClick={this.handleRestart}>RESTART</button></div> : <p className='Hangman-btns'>{this.generateButtons()}</p>}
       </div>
     );
   }
